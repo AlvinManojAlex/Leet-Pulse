@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <h1>Leet-Pulse</h1>
+  </header>
+
+  <section id="add-user-section">
+    <form id="add-user-form">
+      <input type="text" id="username-input" placeholder="Username or profile URL" autocomplete="off">
+      <button type="submit">Add</button>
+    </form>
+    <p id="add-user-error" class="error-message" hidden></p>
+  </section>
+
+  <section id="empty-state" hidden>
+    <p>No users tracked yet. Add a LeetCode username to get started.</p>
+  </section>
+
+  <section id="tracked-users-list"></section>
+
+  <section id="feed-list"></section>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
