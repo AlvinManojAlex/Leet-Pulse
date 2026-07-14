@@ -69,7 +69,12 @@ async function pollSingleUser(username, lastSeenMap, statsMap) {
   const matched = await fetchMatchedUser(username);
   if (!matched) return null;
 
-  const prevStats = statsMap[username] ?? { easy: 0, medium: 0, hard: 0, total: 0 };
+  if (!(username in statsMap)) {
+    statsMap[username] = matched;
+    return null;
+  }
+
+  const prevStats = statsMap[username];
   const delta = {
     easy: matched.easy - prevStats.easy,
     medium: matched.medium - prevStats.medium,
