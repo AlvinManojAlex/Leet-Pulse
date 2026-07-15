@@ -36,7 +36,7 @@ function renderTrackedUsers(trackedUsers, stats) {
     el.className = 'tracked-user';
     el.innerHTML = `
       <span class="username">${escapeHtml(user.username)}</span>
-      <span class="stats">${s ? `E:${s.easy} M:${s.medium} H:${s.hard}` : 'pending...'}</span>
+      <span class="stats">${s ? `Easy: ${s.easy} Medium: ${s.medium} Hard: ${s.hard}` : 'pending...'}</span>
       <button class="remove-btn" data-username="${escapeHtml(user.username)}">&times;</button>
     `;
     container.appendChild(el);
