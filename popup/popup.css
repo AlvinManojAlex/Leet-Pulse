@@ -4,19 +4,19 @@
   --muted: #666;
   --border: #eee;
   --input-border: #ccc;
-  --accent: #2f7d32;
-  --accent-text: #ffffff;
+  --accent: #ffa116;
+  --accent-text: #1a1a1a;
   --error: #c62828;
 }
 
 :root[data-theme="dark"] {
-  --bg: #1e1e1e;
+  --bg: #141414;
   --text: #eaeaea;
   --muted: #aaa;
-  --border: #3a3a3a;
-  --input-border: #555;
-  --accent: #43a047;
-  --accent-text: #ffffff;
+  --border: #333;
+  --input-border: #444;
+  --accent: #ffa116;
+  --accent-text: #141414;
   --error: #ef5350;
 }
 
