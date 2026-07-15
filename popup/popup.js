@@ -3,8 +3,27 @@ import { extractUsername } from '../shared/leetcode.js';
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
+  await initTheme();
   await render();
   document.getElementById('add-user-form').addEventListener('submit', onAddUser);
+  document.getElementById('theme-toggle').addEventListener('click', onToggleTheme);
+}
+
+async function initTheme() {
+  const { theme } = await chrome.storage.local.get('theme');
+  applyTheme(theme === 'dark' ? 'dark' : 'light');
+}
+
+async function onToggleTheme() {
+  const current = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  await chrome.storage.local.set({ theme: next });
+}
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  document.getElementById('theme-toggle').textContent = theme === 'dark' ? '☀️' : '🌙';
 }
 
 async function render() {
