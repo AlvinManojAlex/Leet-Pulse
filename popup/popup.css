@@ -58,6 +58,10 @@ header h1 {
   height: fit-content;
 }
 
+#add-user-section {
+  margin-bottom: 16px;
+}
+
 #add-user-form {
   display: flex;
   gap: 6px;
@@ -130,6 +134,8 @@ header h1 {
 
 #feed-list {
   margin-top: 12px;
+  max-height: 280px;
+  overflow-y: auto;
 }
 
 .feed-entry {
