@@ -55,7 +55,7 @@ function renderTrackedUsers(trackedUsers, stats) {
     el.className = 'tracked-user';
     el.innerHTML = `
       <span class="username">${escapeHtml(user.username)}</span>
-      <span class="stats">${s ? `Easy: ${s.easy} Medium: ${s.medium} Hard: ${s.hard}` : 'pending...'}</span>
+      <span class="stats">${s ? `<span class="stat-easy">Easy: ${s.easy}</span><span class="stat-medium">Medium: ${s.medium}</span><span class="stat-hard">Hard: ${s.hard}</span>` : 'pending...'}</span>
       <button class="remove-btn" data-username="${escapeHtml(user.username)}">&times;</button>
     `;
     container.appendChild(el);
@@ -87,10 +87,19 @@ function renderFeed(feed) {
     for (const u of entry.updates) {
       const rowEl = document.createElement('div');
       rowEl.className = 'feed-row';
-      rowEl.innerHTML = `<span class="feed-text">${escapeHtml(u.text)}</span><span class="feed-time">${time}</span>`;
+      rowEl.innerHTML = `<span class="feed-text">${buildColoredSummary(u)}</span><span class="feed-time">${time}</span>`;
       container.appendChild(rowEl);
     }
   }
+}
+
+function buildColoredSummary(u) {
+  const { easy, medium, hard } = u.summary;
+  const parts = [];
+  if (easy > 0) parts.push(`<span class="stat-easy">${easy} easy</span>`);
+  if (medium > 0) parts.push(`<span class="stat-medium">${medium} medium${medium > 1 ? 's' : ''}</span>`);
+  if (hard > 0) parts.push(`<span class="stat-hard">${hard} hard</span>`);
+  return `${escapeHtml(u.username)} solved ${parts.join(', ')}`;
 }
 
 async function onAddUser(e) {

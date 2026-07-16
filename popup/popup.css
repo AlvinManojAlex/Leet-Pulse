@@ -28,6 +28,9 @@
   --accent: #ffa116;
   --accent-text: #1a1a1a;
   --error: #c62828;
+  --easy: #1b5e20;
+  --medium: #8a6100;
+  --hard: #b71c1c;
 }
 
 :root[data-theme="dark"] {
@@ -39,6 +42,9 @@
   --accent: #ffa116;
   --accent-text: #141414;
   --error: #ef5350;
+  --easy: #66bb6a;
+  --medium: #ffca28;
+  --hard: #ef5350;
 }
 
 body {
@@ -136,8 +142,22 @@ header h1 {
 }
 
 .tracked-user .stats {
-  color: var(--muted);
-  font-size: 12px;
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stat-easy {
+  color: var(--easy);
+}
+
+.stat-medium {
+  color: var(--medium);
+}
+
+.stat-hard {
+  color: var(--hard);
 }
 
 .remove-btn {
