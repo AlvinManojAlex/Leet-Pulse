@@ -70,13 +70,26 @@ function renderFeed(feed) {
     container.innerHTML = '<p class="feed-empty">No activity yet.</p>';
     return;
   }
+
+  let currentDay = null;
   for (const entry of feed) {
-    const entryEl = document.createElement('div');
-    entryEl.className = 'feed-entry';
-    const time = new Date(entry.polledAt).toLocaleString();
-    const items = entry.updates.map((u) => `<li>${escapeHtml(u.text)}</li>`).join('');
-    entryEl.innerHTML = `<time>${time}</time><ul>${items}</ul>`;
-    container.appendChild(entryEl);
+    const entryDate = new Date(entry.polledAt);
+    const dayKey = entryDate.toDateString();
+    if (dayKey !== currentDay) {
+      currentDay = dayKey;
+      const dateEl = document.createElement('div');
+      dateEl.className = 'feed-date';
+      dateEl.textContent = entryDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+      container.appendChild(dateEl);
+    }
+
+    const time = entryDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    for (const u of entry.updates) {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'feed-row';
+      rowEl.innerHTML = `<span class="feed-text">${escapeHtml(u.text)}</span><span class="feed-time">${time}</span>`;
+      container.appendChild(rowEl);
+    }
   }
 }
 
