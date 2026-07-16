@@ -1,4 +1,8 @@
-# Leet-Pulse
+<p align="center">
+  <img src="icons/logo.svg" alt="Leet-Pulse logo" width="128" />
+</p>
+
+<h1 align="center">Leet-Pulse</h1>
 
 Chrome extension. Tracks LeetCode activity for watchlist of usernames. Polls hourly, shows feed in popup ("user1 solved 2 mediums"). No notifications and Local storage only.
 
