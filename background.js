@@ -1,4 +1,4 @@
-import { fetchMatchedUser, fetchRecentAcSubmissions } from './shared/leetcode.js';
+import { fetchMatchedUser, fetchRecentAcSubmissions, fetchContestHistory } from './shared/leetcode.js';
 
 const ALARM_NAME = 'leetpulse-poll';
 const POLL_INTERVAL_MINUTES = 60;
@@ -32,27 +32,29 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 async function initStorageDefaults() {
-  const existing = await chrome.storage.local.get(['trackedUsers', 'lastSeen', 'stats', 'feed']);
+  const existing = await chrome.storage.local.get(['trackedUsers', 'lastSeen', 'stats', 'feed', 'lastContest']);
   await chrome.storage.local.set({
     trackedUsers: existing.trackedUsers ?? [],
     lastSeen: existing.lastSeen ?? {},
     stats: existing.stats ?? {},
     feed: existing.feed ?? [],
+    lastContest: existing.lastContest ?? {},
   });
 }
 
 async function runPollCycle() {
-  const { trackedUsers, lastSeen, stats, feed } = await chrome.storage.local.get([
+  const { trackedUsers, lastSeen, stats, feed, lastContest } = await chrome.storage.local.get([
     'trackedUsers',
     'lastSeen',
     'stats',
     'feed',
+    'lastContest',
   ]);
   const updates = [];
 
   for (const user of trackedUsers) {
-    const result = await pollSingleUser(user.username, lastSeen, stats);
-    if (result) updates.push(result);
+    const results = await pollSingleUser(user.username, lastSeen, stats, lastContest);
+    updates.push(...results);
     await sleep(randomBetween(STAGGER_MS_MIN, STAGGER_MS_MAX));
   }
 
@@ -61,17 +63,21 @@ async function runPollCycle() {
   }
 
   const prunedFeed = pruneFeed(feed);
-  await chrome.storage.local.set({ lastSeen, stats, feed: prunedFeed });
+  await chrome.storage.local.set({ lastSeen, stats, feed: prunedFeed, lastContest });
   updateBadge(updates);
 }
 
-async function pollSingleUser(username, lastSeenMap, statsMap) {
+async function pollSingleUser(username, lastSeenMap, statsMap, lastContestMap) {
   const matched = await fetchMatchedUser(username);
-  if (!matched) return null;
+  if (!matched) return [];
+
+  const contestHistory = await fetchContestHistory(username);
+  matched.contestCount = contestHistory.length;
 
   if (!(username in statsMap)) {
     statsMap[username] = matched;
-    return null;
+    if (contestHistory.length > 0) lastContestMap[username] = contestHistory[0].startTime;
+    return [];
   }
 
   const prevStats = statsMap[username];
@@ -87,14 +93,32 @@ async function pollSingleUser(username, lastSeenMap, statsMap) {
     lastSeenMap[username] = Math.max(recent[0].timestamp, lastSeenMap[username] ?? 0);
   }
 
-  const hasNewSolves = delta.easy > 0 || delta.medium > 0 || delta.hard > 0;
-  if (!hasNewSolves) return null;
+  const results = [];
 
-  return {
-    username,
-    summary: { easy: delta.easy, medium: delta.medium, hard: delta.hard },
-    text: buildSummaryText(username, delta),
-  };
+  const hasNewSolves = delta.easy > 0 || delta.medium > 0 || delta.hard > 0;
+  if (hasNewSolves) {
+    results.push({
+      type: 'solve',
+      username,
+      summary: { easy: delta.easy, medium: delta.medium, hard: delta.hard },
+      text: buildSummaryText(username, delta),
+    });
+  }
+
+  const latestContest = contestHistory[0];
+  if (latestContest && latestContest.startTime > (lastContestMap[username] ?? 0)) {
+    lastContestMap[username] = latestContest.startTime;
+    results.push({
+      type: 'contest',
+      username,
+      contestTitle: latestContest.title,
+      problemsSolved: latestContest.problemsSolved,
+      totalProblems: latestContest.totalProblems,
+      text: buildContestText(username, latestContest),
+    });
+  }
+
+  return results;
 }
 
 function buildSummaryText(username, delta) {
@@ -103,6 +127,10 @@ function buildSummaryText(username, delta) {
   if (delta.medium > 0) parts.push(`${delta.medium} medium${delta.medium > 1 ? 's' : ''}`);
   if (delta.hard > 0) parts.push(`${delta.hard} hard`);
   return `${username} solved ${parts.join(', ')}`;
+}
+
+function buildContestText(username, contest) {
+  return `${username} has participated in ${contest.title} with ${contest.problemsSolved} solve${contest.problemsSolved === 1 ? '' : 's'}`;
 }
 
 function pruneFeed(feed) {
@@ -119,13 +147,16 @@ function updateBadge(updates) {
 }
 
 async function fetchInitialStatsForUser(username) {
-  const { stats, lastSeen } = await chrome.storage.local.get(['stats', 'lastSeen']);
+  const { stats, lastSeen, lastContest } = await chrome.storage.local.get(['stats', 'lastSeen', 'lastContest']);
   const matched = await fetchMatchedUser(username);
   if (matched) {
+    const contestHistory = await fetchContestHistory(username);
+    matched.contestCount = contestHistory.length;
     stats[username] = matched;
     const recent = await fetchRecentAcSubmissions(username);
     if (recent.length > 0) lastSeen[username] = recent[0].timestamp;
-    await chrome.storage.local.set({ stats, lastSeen });
+    if (contestHistory.length > 0) lastContest[username] = contestHistory[0].startTime;
+    await chrome.storage.local.set({ stats, lastSeen, lastContest });
   }
   return matched;
 }

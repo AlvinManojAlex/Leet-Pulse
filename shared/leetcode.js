@@ -67,3 +67,28 @@ export async function fetchRecentAcSubmissions(username, limit = 20) {
     timestamp: Number(s.timestamp),
   }));
 }
+
+const CONTEST_HISTORY_QUERY = `
+  query userContestRankingHistory($username: String!) {
+    userContestRankingHistory(username: $username) {
+      attended
+      problemsSolved
+      totalProblems
+      contest { title startTime }
+    }
+  }
+`;
+
+export async function fetchContestHistory(username) {
+  const { data } = await graphqlRequest(CONTEST_HISTORY_QUERY, { username });
+  const history = data?.userContestRankingHistory ?? [];
+  return history
+    .filter((h) => h.attended)
+    .map((h) => ({
+      title: h.contest.title,
+      startTime: h.contest.startTime,
+      problemsSolved: h.problemsSolved,
+      totalProblems: h.totalProblems,
+    }))
+    .sort((a, b) => b.startTime - a.startTime);
+}

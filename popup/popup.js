@@ -56,11 +56,16 @@ function renderTrackedUsers(trackedUsers, stats) {
     el.innerHTML = `
       <span class="username">${escapeHtml(user.username)}</span>
       <span class="stats">${s ? `<span class="stat-easy">Easy: ${s.easy}</span><span class="stat-medium">Medium: ${s.medium}</span><span class="stat-hard">Hard: ${s.hard}</span>` : 'pending...'}</span>
+      <span class="contest-stat">${s && typeof s.contestCount === 'number' ? buildContestText(user.username, s.contestCount) : ''}</span>
       <button class="remove-btn" data-username="${escapeHtml(user.username)}">&times;</button>
     `;
     container.appendChild(el);
   }
   container.querySelectorAll('.remove-btn').forEach((btn) => btn.addEventListener('click', onRemoveUser));
+}
+
+function buildContestText(username, contestCount) {
+  return `${escapeHtml(username)} has participated in ${contestCount} contest${contestCount === 1 ? '' : 's'}`;
 }
 
 function renderFeed(feed) {
@@ -94,6 +99,10 @@ function renderFeed(feed) {
 }
 
 function buildColoredSummary(u) {
+  if (u.type === 'contest') {
+    const n = u.problemsSolved;
+    return `${escapeHtml(u.username)} has participated in <span class="contest-name">${escapeHtml(u.contestTitle)}</span> with ${n} solve${n === 1 ? '' : 's'}`;
+  }
   const { easy, medium, hard } = u.summary;
   const parts = [];
   if (easy > 0) parts.push(`<span class="stat-easy">${easy} easy</span>`);
