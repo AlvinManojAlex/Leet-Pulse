@@ -148,11 +148,17 @@ async function onAddUser(e) {
 
 async function onRemoveUser(e) {
   const username = e.target.dataset.username;
-  const { trackedUsers, stats, lastSeen } = await chrome.storage.local.get(['trackedUsers', 'stats', 'lastSeen']);
+  const { trackedUsers, stats, lastSeen, lastContest } = await chrome.storage.local.get([
+    'trackedUsers',
+    'stats',
+    'lastSeen',
+    'lastContest',
+  ]);
   const updated = trackedUsers.filter((u) => u.username !== username);
   delete stats[username];
   delete lastSeen[username];
-  await chrome.storage.local.set({ trackedUsers: updated, stats, lastSeen });
+  delete lastContest[username];
+  await chrome.storage.local.set({ trackedUsers: updated, stats, lastSeen, lastContest });
   await render();
 }
 

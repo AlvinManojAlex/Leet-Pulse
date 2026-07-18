@@ -106,16 +106,23 @@ async function pollSingleUser(username, lastSeenMap, statsMap, lastContestMap) {
   }
 
   const latestContest = contestHistory[0];
-  if (latestContest && latestContest.startTime > (lastContestMap[username] ?? 0)) {
-    lastContestMap[username] = latestContest.startTime;
-    results.push({
-      type: 'contest',
-      username,
-      contestTitle: latestContest.title,
-      problemsSolved: latestContest.problemsSolved,
-      totalProblems: latestContest.totalProblems,
-      text: buildContestText(username, latestContest),
-    });
+  if (latestContest) {
+    const prevContestTime = lastContestMap[username];
+    if (prevContestTime === undefined) {
+      // No baseline yet for this user — establish one silently, don't
+      // treat whatever their latest contest happens to be as "new".
+      lastContestMap[username] = latestContest.startTime;
+    } else if (latestContest.startTime > prevContestTime) {
+      lastContestMap[username] = latestContest.startTime;
+      results.push({
+        type: 'contest',
+        username,
+        contestTitle: latestContest.title,
+        problemsSolved: latestContest.problemsSolved,
+        totalProblems: latestContest.totalProblems,
+        text: buildContestText(username, latestContest),
+      });
+    }
   }
 
   return results;
