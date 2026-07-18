@@ -120,6 +120,7 @@ async function pollSingleUser(username, lastSeenMap, statsMap, lastContestMap) {
         contestTitle: latestContest.title,
         problemsSolved: latestContest.problemsSolved,
         totalProblems: latestContest.totalProblems,
+        finishTimeInSeconds: latestContest.finishTimeInSeconds,
         text: buildContestText(username, latestContest),
       });
     }
@@ -137,7 +138,19 @@ function buildSummaryText(username, delta) {
 }
 
 function buildContestText(username, contest) {
+  if (isSuspectContestData(contest)) {
+    return `${username} has participated in ${contest.title}`;
+  }
   return `${username} has participated in ${contest.title} with ${contest.problemsSolved} solve${contest.problemsSolved === 1 ? '' : 's'}`;
+}
+
+// LeetCode's public API occasionally returns problemsSolved: 0 and
+// finishTimeInSeconds: 0 for an attended contest even when the user's
+// official ranking page shows real solves — a backend data bug on
+// LeetCode's end, not a diffing bug here. Omit the count rather than
+// assert a number we can't trust.
+function isSuspectContestData(contest) {
+  return contest.problemsSolved === 0 && contest.finishTimeInSeconds === 0;
 }
 
 function pruneFeed(feed) {

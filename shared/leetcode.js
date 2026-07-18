@@ -74,6 +74,7 @@ const CONTEST_HISTORY_QUERY = `
       attended
       problemsSolved
       totalProblems
+      finishTimeInSeconds
       contest { title startTime }
     }
   }
@@ -89,6 +90,7 @@ export async function fetchContestHistory(username) {
       startTime: h.contest.startTime,
       problemsSolved: h.problemsSolved,
       totalProblems: h.totalProblems,
+      finishTimeInSeconds: h.finishTimeInSeconds,
     }))
     .sort((a, b) => b.startTime - a.startTime);
 }

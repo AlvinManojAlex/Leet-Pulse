@@ -100,8 +100,12 @@ function renderFeed(feed) {
 
 function buildColoredSummary(u) {
   if (u.type === 'contest') {
+    const contestName = `<span class="contest-name">${escapeHtml(u.contestTitle)}</span>`;
+    if (u.problemsSolved === 0 && u.finishTimeInSeconds === 0) {
+      return `${escapeHtml(u.username)} has participated in ${contestName}`;
+    }
     const n = u.problemsSolved;
-    return `${escapeHtml(u.username)} has participated in <span class="contest-name">${escapeHtml(u.contestTitle)}</span> with ${n} solve${n === 1 ? '' : 's'}`;
+    return `${escapeHtml(u.username)} has participated in ${contestName} with ${n} solve${n === 1 ? '' : 's'}`;
   }
   const { easy, medium, hard } = u.summary;
   const parts = [];
