@@ -4,7 +4,7 @@
 
 <h1 align="center">Leet-Pulse</h1>
 
-Chrome extension. Tracks LeetCode activity for watchlist of usernames. Polls hourly, shows feed in popup ("user1 solved 2 mediums"). No notifications and Local storage only.
+Chrome extension. Tracks LeetCode activity for watchlist of usernames. Polls hourly, shows feed in popup. No notifications and Local storage only.
 
 ## Setup
 
@@ -24,8 +24,9 @@ Chrome extension. Tracks LeetCode activity for watchlist of usernames. Polls hou
   - Invalid username → inline error, not added
   - Already tracked → inline error, not added
 - Fresh install starts empty — no default/pre-populated users
-- Extension polls every 60 min in background, diffs new accepted submissions per user
-- Popup feed shows per-user summaries since last poll (e.g. "user1 solved 2 mediums")
+- Extension polls every 60 min in background, diffs new accepted submissions and new contest participation per user
+- Popup feed shows per-user summaries since last poll (e.g. "user1 solved 2 mediums", "user1 has participated in Weekly Contest 401 with 3 solves")
+- Each tracked user's card also shows an all-time total contest count, separate from the feed
 
 ## Notes
 
