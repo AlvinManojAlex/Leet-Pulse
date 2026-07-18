@@ -7,6 +7,7 @@ async function init() {
   await render();
   document.getElementById('add-user-form').addEventListener('submit', onAddUser);
   document.getElementById('theme-toggle').addEventListener('click', onToggleTheme);
+  chrome.action.setBadgeText({ text: '' });
 }
 
 async function initTheme() {
