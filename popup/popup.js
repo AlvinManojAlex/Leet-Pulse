@@ -12,7 +12,7 @@ async function init() {
 
 async function initTheme() {
   const { theme } = await chrome.storage.local.get('theme');
-  applyTheme(theme === 'dark' ? 'dark' : 'light');
+  applyTheme(theme === 'light' ? 'light' : 'dark');
 }
 
 async function onToggleTheme() {
