@@ -94,16 +94,16 @@ function renderFeed(feed) {
   let currentDay = null;
   for (const entry of feed) {
     const entryDate = new Date(entry.polledAt);
-    const dayKey = entryDate.toDateString();
+    const dayKey = entryDate.toISOString().slice(0, 10);
     if (dayKey !== currentDay) {
       currentDay = dayKey;
       const dateEl = document.createElement('div');
       dateEl.className = 'feed-date';
-      dateEl.textContent = entryDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+      dateEl.textContent = entryDate.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric', timeZone: 'UTC' });
       container.appendChild(dateEl);
     }
 
-    const time = entryDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+    const time = `${entryDate.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' })} UTC`;
     for (const u of entry.updates) {
       const rowEl = document.createElement('div');
       rowEl.className = 'feed-row';
