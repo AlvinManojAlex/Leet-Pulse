@@ -4,10 +4,26 @@ document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   await initTheme();
+  applyTab('feed');
   await render();
   document.getElementById('add-user-form').addEventListener('submit', onAddUser);
   document.getElementById('theme-toggle').addEventListener('click', onToggleTheme);
+  document.querySelectorAll('.tab-btn').forEach((btn) => btn.addEventListener('click', onSwitchTab));
   chrome.action.setBadgeText({ text: '' });
+}
+
+function applyTab(tab) {
+  document.getElementById('users-view').hidden = tab !== 'users';
+  document.getElementById('feed-view').hidden = tab !== 'feed';
+  document.querySelectorAll('.tab-btn').forEach((btn) => {
+    const isActive = btn.dataset.tab === tab;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', String(isActive));
+  });
+}
+
+function onSwitchTab(e) {
+  applyTab(e.currentTarget.dataset.tab);
 }
 
 async function initTheme() {
@@ -31,19 +47,17 @@ async function render() {
   const { trackedUsers, feed, stats } = await chrome.storage.local.get(['trackedUsers', 'feed', 'stats']);
   const emptyState = document.getElementById('empty-state');
   const usersList = document.getElementById('tracked-users-list');
-  const feedList = document.getElementById('feed-list');
 
-  if (!trackedUsers || trackedUsers.length === 0) {
-    emptyState.hidden = false;
-    usersList.hidden = true;
-    feedList.hidden = true;
-    return;
+  const hasUsers = trackedUsers && trackedUsers.length > 0;
+  emptyState.hidden = hasUsers;
+  usersList.hidden = !hasUsers;
+
+  if (hasUsers) {
+    renderTrackedUsers(trackedUsers, stats ?? {});
+  } else {
+    usersList.innerHTML = '';
   }
-  emptyState.hidden = true;
-  usersList.hidden = false;
-  feedList.hidden = false;
 
-  renderTrackedUsers(trackedUsers, stats ?? {});
   renderFeed(feed ?? []);
 }
 

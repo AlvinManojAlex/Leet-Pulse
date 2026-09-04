@@ -10,21 +10,30 @@
     <button id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
   </header>
 
-  <section id="add-user-section">
-    <form id="add-user-form">
-      <input type="text" id="username-input" placeholder="Username or profile URL" autocomplete="off">
-      <button type="submit">Add</button>
-    </form>
-    <p id="add-user-error" class="error-message" hidden></p>
+  <div class="tab-bar" role="tablist">
+    <button type="button" class="tab-btn" data-tab="users" role="tab" aria-selected="false">Users</button>
+    <button type="button" class="tab-btn" data-tab="feed" role="tab" aria-selected="true">Activity</button>
+  </div>
+
+  <section id="users-view" hidden>
+    <section id="add-user-section">
+      <form id="add-user-form">
+        <input type="text" id="username-input" placeholder="Username or profile URL" autocomplete="off">
+        <button type="submit">Add</button>
+      </form>
+      <p id="add-user-error" class="error-message" hidden></p>
+    </section>
+
+    <section id="empty-state" hidden>
+      <p>No users tracked yet. Add a LeetCode username to get started.</p>
+    </section>
+
+    <section id="tracked-users-list"></section>
   </section>
 
-  <section id="empty-state" hidden>
-    <p>No users tracked yet. Add a LeetCode username to get started.</p>
+  <section id="feed-view">
+    <section id="feed-list"></section>
   </section>
-
-  <section id="tracked-users-list"></section>
-
-  <section id="feed-list"></section>
 
   <script type="module" src="popup.js"></script>
 </body>
